@@ -49,15 +49,15 @@ class GoogleSheetsAPISample {
      * @param string $job_objective_5
      * @param string $event_experience
      * @param string $height
-     * @param string $self_portrait
+     * @param string $selfie
      * @param string $remarks
      */
-    public function append(string $date, string $name, string $ruby, string $gender, string $birth_year, string $birth_month, string $birth_day, string $blood_type, string $phone_number, string $mail_address, string $current_job, string $job_objective_1, string $job_objective_2, string $job_objective_3, string $job_objective_4, string $job_objective_5, string $event_experience, string $height, string $self_portrait, string $remarks)
+    public function append(string $date, string $name, string $ruby, string $gender, string $birth_year, string $birth_month, string $birth_day, string $blood_type, string $phone_number, string $mail_address, string $current_job, string $job_objective_1, string $job_objective_2, string $job_objective_3, string $job_objective_4, string $job_objective_5, string $event_experience, string $height, string $selfie, string $remarks)
     {
         $value = new Google_Service_Sheets_ValueRange();
-        $value->setValues([ 'values' => [ $date, $name, $ruby, $gender, $birth_year, $birth_month, $birth_day, $blood_type, $phone_number, $mail_address, $current_job, $job_objective, $event_experience, $height, $self_portrait, $remarks ] ]);
+        $value->setValues([ 'values' => [ $date, $name, $ruby, $gender, $birth_year, $birth_month, $birth_day, $blood_type, $phone_number, $mail_address, $current_job, $job_objective_1, $job_objective_1, $job_objective_2, $job_objective_3, $$job_objective_4, $job_objective_5, $event_experience, $height, $selfie, $remarks ] ]);
         $response = $this->service->spreadsheets_values->append($this->spreadsheetId, 'シート1!A1', $value, [ 'valueInputOption' => 'USER_ENTERED' ] );
-//        var_dump($response);
+        var_dump($response);
     }
 }
 // 変数の初期化
@@ -68,7 +68,7 @@ $error = array();
 if( !empty($_POST) ) {
 	foreach( $_POST as $key => $value ) {
 		$clean[$key] = htmlspecialchars( $value, ENT_QUOTES);
-	} 
+	}
 }
 if( !empty($clean['btn_confirm']) ) {
 	$error = validation($clean);
@@ -85,13 +85,13 @@ if( !empty($clean['btn_confirm']) ) {
 		$page_flag = 1;
 		// セッションの書き込み
 		session_start();
-		$_SESSION['page'] = true;		
+		$_SESSION['page2'] = true;		
 	}
 } elseif( !empty($clean['btn_submit']) ) {
 	session_start();
-	if( !empty($_SESSION['page']) && $_SESSION['page'] === true ) {
+	if( !empty($_SESSION['page2']) && $_SESSION['page2'] === true ) {
 		// セッションの削除
-		unset($_SESSION['page']);
+		unset($_SESSION['page2']);
 		$page_flag = 2;
 		// 変数とタイムゾーンを初期化
 //		$header = null;
@@ -111,7 +111,7 @@ if( !empty($clean['btn_confirm']) ) {
         $dotenv->load();
         $address = getenv('ADMIN_EMAIL');
 		$header = "MIME-Version: 1.0\n";
-//		$header = "Content-Type: multipart/mixed;boundary=\"__BOUNDARY__\"\n";
+		$header = "Content-Type: multipart/mixed;boundary=\"__BOUNDARY__\"\n";
 		$header .= "From: NO-X <${address}>\n";
 		$header .= "Reply-To: NO-X <${address}>\n";
 	
@@ -119,9 +119,8 @@ if( !empty($clean['btn_confirm']) ) {
 		$auto_reply_subject = 'ご応募ありがとうございます。';
 	    $date = date("Y-m-d H:i");
 		// 本文を設定
-		$auto_reply_text = "この度は、ご応募頂き誠にありがとうございます。
-	下記の内容でご応募を受け付けました。
-    担当の者より後日ご連絡差し上げます。\n\n";
+		$auto_reply_text = "この度は、ご応募頂き誠にありがとうございます。\n下記の内容でご応募を受け付けました。\n担当の者より後日ご連絡差し上げます。\n\n";
+
 		$auto_reply_text .= "お問い合わせ日時：" . $date . "\n\n";
 		$auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
         $auto_reply_text .= "ふりがな：" . $clean['your_ruby'] . "\n\n";
@@ -130,17 +129,12 @@ if( !empty($clean['btn_confirm']) ) {
 		} else {
 			$auto_reply_text .= "性別：女性\n\n";
 		}
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-        $auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-		$auto_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";
-		
+        $auto_reply_text .= "生年月日：" . $clean['birth_year'] . "年" . $clean['birth_month'] . "月" . $clean['birth_day'] . "日\n\n";
+        $auto_reply_text .= "血液型：" . $clean['blood_type'] . "\n\n";
+        $auto_reply_text .= "連絡先電話番号：" . $clean['phone_number'] . "\n\n";
+        $auto_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";		
 		if( $clean['current_job'] === "1" ){
-			$auto_reply_text .= "現在の職業：フリーター\n\n";
+			$auto_reply_text .= "現在の職業：パート・アルバイト\n\n";
 		} elseif ( $clean['current_job'] === "2" ){
 			$auto_reply_text .= "現在の職業：大学生\n\n";
 		} elseif ( $clean['current_job'] === "3" ){
@@ -152,14 +146,30 @@ if( !empty($clean['btn_confirm']) ) {
 		} elseif( $clean['current_job'] === "6" ){
 			$auto_reply_text .= "現在の職業：会社員\n\n";
 		} elseif( $clean['current_job'] === "7" ){
-			$auto_reply_text .= "現在の職業：主婦\n\n";
+			$auto_reply_text .= "現在の職業：自営業\n\n";
 		} elseif( $clean['current_job'] === "8" ){
-			$auto_reply_text .= "現在の職業：就職活動中\n\n";
+			$auto_reply_text .= "現在の職業：主婦\n\n";
 		} elseif( $clean['current_job'] === "9" ){
+			$auto_reply_text .= "現在の職業：就職活動中\n\n";
+		} elseif( $clean['current_job'] === "10" ){
 			$auto_reply_text .= "現在の職業：その他\n\n";
 		}
-	
-		$auto_reply_text .= "お問い合わせ内容：" . nl2br($clean['contact']) . "\n\n";
+        $auto_reply_text .= "希望職種：";
+        if( $clean['job_objective_1'] === "companion"){ $auto_reply_text .= 'コンパニオン  '; }
+        if( $clean['job_objective_2'] === "narrator"){ $auto_reply_text .= 'ナレーター  '; }
+        if( $clean['job_objective_3'] === "mc"){ $auto_reply_text .= 'MC  '; }
+        if( $clean['job_objective_4'] === "model"){ $auto_reply_text .= 'モデル  '; }
+        if( $clean['job_objective_5'] === "ad"){ $auto_reply_text .= 'AD,スタッフ'; }
+        $auto_reply_text .= "\n\n";
+            
+        if( $clean['event_experience'] === "no" ){
+			$auto_reply_text .= "イベント経験：なし\n\n";
+		} else {
+			$auto_reply_text .= "イベント経験：あり\n\n";
+		} 
+        $auto_reply_text .= "身長：" . $clean['height'] . "\n\n";
+        $auto_reply_text .= "備考：" . nl2br($clean['remarks']) . "\n\n";
+
 		$auto_reply_text .= "株式会社ノックス";
 		
 		// テキストメッセージをセット
@@ -194,14 +204,13 @@ if( !empty($clean['btn_confirm']) ) {
         
         
 		// 運営側へ送るメールの件名
-		$admin_reply_subject = "お問い合わせを受け付けました";
+		$admin_reply_subject = "【ノックスHP】より応募を受け付けました";
 	
 		// 本文を設定
-		$admin_reply_text = "下記の内容でお問い合わせがありました。\n\n";
+		$admin_reply_text = "下記の内容で応募がありました。\n\n";
 		$admin_reply_text .= "お問い合わせ日時：" . $date . "\n\n";
 		$admin_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
-		$admin_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";
-	    
+        $admin_reply_text .= "ふりがな：" . $clean['your_ruby'] . "\n\n";
         $gender = null;
 		if( $clean['gender'] === "male" ) {
 			$admin_reply_text .= "性別：男性\n\n";
@@ -210,38 +219,95 @@ if( !empty($clean['btn_confirm']) ) {
 			$admin_reply_text .= "性別：女性\n\n";
             $gender = "女性";
 		}
-	    
+        
+        $admin_reply_text .= "生年月日：" . $clean['birth_year'] . "年" . $clean['birth_month'] . "月" . $clean['birth_day'] . "日\n\n";
+        
+        $admin_reply_text .= "血液型：" . $clean['blood_type'] . "\n\n";
+        $admin_reply_text .= "連絡先電話番号：" . $clean['phone_number'] . "\n\n";
+        
+        $admin_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";		
         $current_job = null;
 		if( $clean['current_job'] === "1" ){
-			$admin_reply_text .= "現在の職業：フリーター\n\n";
-            $current_job = "フリーター";
+			$admin_reply_text .= "現在の職業：パート・アルバイト\n\n";
+            $curret_job = "パート・アルバイト";
 		} elseif ( $clean['current_job'] === "2" ){
-			$admin_reply_text .= "年齢：20歳〜29歳\n\n";
-            $current_job = "20歳〜29歳";
+			$admin_reply_text .= "現在の職業：大学生\n\n";
+            $curret_job = "大学生";
 		} elseif ( $clean['current_job'] === "3" ){
-			$admin_reply_text .= "年齢：30歳〜39歳\n\n";
-            $current_job = "30歳〜39歳";
+			$admin_reply_text .= "現在の職業：短大生\n\n";
+            $curret_job = "短大生";
 		} elseif ( $clean['current_job'] === "4" ){
-			$admin_reply_text .= "年齢：40歳〜49歳\n\n";
-            $current_job = "40歳〜49歳";
+			$admin_reply_text .= "現在の職業：専門学生\n\n";
+            $curret_job = "専門学生";
 		} elseif( $clean['current_job'] === "5" ){
-			$admin_reply_text .= "年齢：50歳〜59歳\n\n";
-            $current_job = "50歳〜59歳";
+			$admin_reply_text .= "現在の職業：高校生\n\n";
+            $curret_job = "高校生";
 		} elseif( $clean['current_job'] === "6" ){
-			$admin_reply_text .= "年齢：60歳〜\n\n";
-            $age = "60歳〜";
+			$admin_reply_text .= "現在の職業：会社員\n\n";
+            $curret_job = "会社員";
+		} elseif( $clean['current_job'] === "7" ){
+			$admin_reply_text .= "現在の職業：自営業\n\n";
+            $curret_job = "自営業";
+		} elseif( $clean['current_job'] === "8" ){
+			$admin_reply_text .= "現在の職業：主婦\n\n";
+            $curret_job = "主婦";
+		} elseif( $clean['current_job'] === "9" ){
+			$admin_reply_text .= "現在の職業：就職活動中\n\n";
+            $curret_job = "就職活動中";
+		} elseif( $clean['current_job'] === "10" ){
+			$admin_reply_text .= "現在の職業：その他\n\n";
+            $curret_job = "その他";
 		}
-	
-		$admin_reply_text .= "お問い合わせ内容：" . nl2br($clean['contact']) . "\n\n";
+        
+        $objective1 = "希望なし";
+        $objective2 = "希望なし";
+        $objective3 = "希望なし";
+        $objective4 = "希望なし";
+        $objective5 = "希望なし";
+        
+        $admin_reply_text .= "希望職種：";
+        if( $clean['job_objective_1'] === "companion"){ 
+            $admin_reply_text .= 'コンパニオン  ';
+            $objective1 = '希望';
+        }
+        if( $clean['job_objective_2'] === "narrator"){
+            $admin_reply_text .= 'ナレーター  ';
+            $objective2 = '希望';
+        }
+        if( $clean['job_objective_3'] === "mc"){
+            $admin_reply_text .= 'MC  ';
+            $objective3 = '希望';
+        }
+        if( $clean['job_objective_4'] === "model"){
+            $admin_reply_text .= 'モデル  ';
+            $objective4 = '希望';
+        }
+        if( $clean['job_objective_5'] === "ad"){
+            $admin_reply_text .= 'AD,スタッフ';
+            $objective5 = '希望';
+        }
+        $admin_reply_text .= "\n\n";
+        
+        $event = null;
+        if( $clean['event_experience'] === "no" ){
+			$admin_reply_text .= "イベント経験：なし\n\n";
+            $event = 'なし';
+		} else {
+			$admin_reply_text .= "イベント経験：あり\n\n";
+            $event = 'あり';
+		} 
+        $admin_reply_text .= "身長：" . $clean['height'] . "cm\n\n";
+        $admin_reply_text .= "備考：" . nl2br($clean['remarks']) . "\n\n";
 		
 		// テキストメッセージをセット
-//		$body = "--__BOUNDARY__\n";
-//		$body .= "Content-Type: text/plain; charset=\"ISO-2022-JP\"\n\n";
+		$body = "--__BOUNDARY__\n";
+		$body .= "Content-Type: text/plain; charset=\"ISO-2022-JP\"\n\n";
 		$body = $admin_reply_text . "\n";
-//		$body .= "--__BOUNDARY__\n";
-	
+		$body .= "--__BOUNDARY__\n";
+	    $selfie = "なし";
 		// ファイルを添付
-		if( !empty($clean['attachment_file']) ) {		
+		if( !empty($clean['attachment_file']) ) {
+            $selfie = "あり";
 			$body .= "Content-Type: application/octet-stream; name=\"{$clean['attachment_file']}\"\n";
 			$body .= "Content-Disposition: attachment; filename=\"{$clean['attachment_file']}\"\n";
 			$body .= "Content-Transfer-Encoding: base64\n";
@@ -249,7 +315,7 @@ if( !empty($clean['btn_confirm']) ) {
 			$body .= chunk_split(base64_encode(file_get_contents(FILE_DIR.$clean['attachment_file'])));
 			$body .= "--__BOUNDARY__\n";
 		}
-	
+	    $admin_reply_text .= "画像：" . $selfie;
 		// 管理者へメール送信
         mb_send_mail( 'awaya.android@gmail.com', $admin_reply_subject, $body, $header);
 //        $from_admin = new SendGrid\Email(null, $address);
@@ -263,7 +329,7 @@ if( !empty($clean['btn_confirm']) ) {
         
         // GoogleSpreadSheetに書き込み
 		$customer_data = new GoogleSheetsAPISample;
-        $customer_data->append( $date, $clean['your_name'], $clean['email'], $gender, $age, $clean['contact']);
+        $customer_data->append( $date, $clean['your_name'], $clean['your_ruby'], $gender, $clean['birth_year'], $clean['birth_month'], $clean['birth_day'], $clean['blood_type'], $clean['phone_number'], $clean['email'], $current_job, $objective1, $objective2, $objective3, $objective4, $objective5, $event, $clean['height'], $selfie, $clean['remarks']);
 	} else {
 		$page_flag = 0;
 	}	
@@ -421,7 +487,7 @@ function validation($data) {
             font-weight: normal;
         }
 
-        textarea[name=contact] {
+        textarea[name=remarks] {
             padding: 5px 10px;
             width: 60%;
             height: 100px;
@@ -541,7 +607,7 @@ function validation($data) {
                     elseif( $clean['blood_type'] === "5" ){ echo '不明'; } ?>
                 </p>
             </div>
-            <div class="element_wrap">>
+            <div class="element_wrap">
                 <label>連絡先電話番号（ハイフンなし）</label>
                 <p>
                     <?php echo $clean['phone_number']; ?>
@@ -571,13 +637,11 @@ function validation($data) {
             <div class="element_wrap">
                 <label>希望職種（複数回答可）</label>
                 <p>
-                    <?php $jobs = array(); ?>
-                    <?php if( $clean['job_objective_1'] === "companion"){ $jobs[] = 'コンパニオン'; }
-                    elseif( $clean['job_objective_2'] === "narrator"){ $jobs[] = 'ナレーター'; }
-                    elseif( $clean['job_objective_3'] === "mc"){ $jobs[] = 'MC'; }
-                    elseif( $clean['job_objective_4'] === "model"){ $jobs[] = 'モデル'; }
-                    elseif( $clean['job_objective_5'] === "ad"){ $jobs[] = 'AD,スタッフ'; }
-                    echo join( "   ", $jobs); ?>
+                    <?php if( $clean['job_objective_1'] === "companion"){ echo 'コンパニオン  '; }
+                    if( $clean['job_objective_2'] === "narrator"){ echo 'ナレーター  '; }
+                    if( $clean['job_objective_3'] === "mc"){ echo 'MC  '; }
+                    if( $clean['job_objective_4'] === "model"){ echo 'モデル  '; }
+                    if( $clean['job_objective_5'] === "ad"){ echo 'AD,スタッフ'; } ?>
                 </p>
             </div>
             <div class="element_wrap">
@@ -615,15 +679,40 @@ function validation($data) {
             <input type="submit" name="btn_back" value="戻る">
             <input type="submit" name="btn_submit" value="送信">
             <input type="hidden" name="your_name" value="<?php echo $clean['your_name']; ?>">
-            <input type="hidden" name="email" value="<?php echo $clean['email']; ?>">
+            <input type="hidden" name="your_ruby" value="<?php echo $clean['your_ruby']; ?>">
             <input type="hidden" name="gender" value="<?php echo $clean['gender']; ?>">
-            <input type="hidden" name="age" value="<?php echo $clean['age']; ?>">
-            <input type="hidden" name="contact" value="<?php echo $clean['contact']; ?>">
-
+            <input type="hidden" name="birth_year" value="<?php echo $clean['birth_year']; ?>">
+            <input type="hidden" name="birth_month" value="<?php echo $clean['birth_month']; ?>">
+            <input type="hidden" name="birth_day" value="<?php echo $clean['birth_day']; ?>">
+            <?php if( !empty($clean['blood_type']) ): ?>
+            <input type="hidden" name="blood_type" value="<?php echo $clean['blood_type']; ?>">
+            <?php endif; ?>
+            <?php if( !empty($clean['phone_number']) ): ?>
+            <input type="hidden" name="phone_number" value="<?php echo $clean['phone_number']; ?>">
+            <?php endif; ?>
+            <input type="hidden" name="email" value="<?php echo $clean['email']; ?>">
+            <input type="hidden" name="current_job" value="<?php echo $clean['current_job']; ?>">
+            <?php if( !empty($clean['job_objective_1']) ): ?>
+            <input type="hidden" name="job_objective_1" value="<?php echo $clean['job_objective_1']; ?>">
+            <?php endif; ?>
+            <?php if( !empty($clean['job_objective_2']) ): ?>
+            <input type="hidden" name="job_objective_2" value="<?php echo $clean['job_objective_2']; ?>">
+            <?php endif; ?>
+            <?php if( !empty($clean['job_objective_3']) ): ?>
+            <input type="hidden" name="job_objective_3" value="<?php echo $clean['job_objective_3']; ?>">
+            <?php endif; ?>
+            <?php if( !empty($clean['job_objective_4']) ): ?>
+            <input type="hidden" name="job_objective_4" value="<?php echo $clean['job_objective_4']; ?>">
+            <?php endif; ?>
+            <?php if( !empty($clean['job_objective_5']) ): ?>
+            <input type="hidden" name="job_objective_5" value="<?php echo $clean['job_objective_5']; ?>">
+            <?php endif; ?>
+            <input type="hidden" name="event_experience" value="<?php echo $clean['event_experience']; ?>">
+            <input type="hidden" name="height" value="<?php echo $clean['height']; ?>">
             <?php if( !empty($clean['attachment_file']) ): ?>
             <input type="hidden" name="attachment_file" value="<?php echo $clean['attachment_file']; ?>">
             <?php endif; ?>
-
+            <input type="hidden" name="remarks" value="<?php echo $clean['remarks']; ?>">
             <input type="hidden" name="agreement" value="<?php echo $clean['agreement']; ?>">
         </form>
 
@@ -813,7 +902,7 @@ function validation($data) {
                 <input type="checkbox" class="ib" name="job_objective_2" value="narrator" <?php if( !empty ($clean['job_objective_2']) && $clean['job_objective_2'] === "narrator"){ echo 'checked' ; } ?>>ナレーター
                 <input type="checkbox" class="ib" name="job_objective_3" value="mc" <?php if( !empty ($clean['job_objective_3']) && $clean['job_objective_3'] === "mc"){ echo 'checked' ; } ?>>MC
                 <input type="checkbox" class="ib" name="job_objective_4" value="model" <?php if( !empty ($clean['job_objective_4']) && $clean['job_objective_4'] === "model"){ echo 'checked' ; } ?>>モデル
-                <input type="checkbox" class="ib" name="job_objective_5" value="ad" <?php if( !empty ($clean['job_objective_5']) && $clean['job_objective_5'] === "ad"{ echo 'checked' ; } ?>>AD,スタッフ
+                <input type="checkbox" class="ib" name="job_objective_5" value="ad" <?php if( !empty ($clean['job_objective_5']) && $clean['job_objective_5'] === "ad"){ echo 'checked' ; } ?>>AD,スタッフ
             </div>
             
             <div class="element_wrap">
@@ -828,7 +917,7 @@ function validation($data) {
             </div>
             <div class="element_wrap">
                 <label>備考</label>
-                <textarea name="contact"><?php if( !empty($clean['']) ){ echo $clean['remarks']; } ?></textarea>
+                <textarea name="remarks"><?php if( !empty($clean['remarks']) ){ echo $clean['remarks']; } ?></textarea>
             </div>
             
             <div class="element_wrap">
