@@ -131,7 +131,7 @@ if( !empty($clean['btn_confirm']) ) {
 			$auto_reply_text .= "年齢：60歳〜\n\n";
 		}
 	
-		$auto_reply_text .= "お問い合わせ内容：" . nl2br($clean['contact']) . "\n\n";
+		$auto_reply_text .= "お問い合わせ内容：" . $clean['contact'] . "\n\n";
 		$auto_reply_text .= "株式会社ノックス";
 		
 		// テキストメッセージをセット
@@ -204,7 +204,7 @@ if( !empty($clean['btn_confirm']) ) {
             $age = "60歳〜";
 		}
 	
-		$admin_reply_text .= "お問い合わせ内容：" . nl2br($clean['contact']) . "\n\n";
+		$admin_reply_text .= "お問い合わせ内容：" . $clean['contact'] . "\n\n";
 		
 		// テキストメッセージをセット
 //		$body = "--__BOUNDARY__\n";

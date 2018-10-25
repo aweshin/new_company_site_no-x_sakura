@@ -55,7 +55,7 @@ class GoogleSheetsAPISample {
     public function append(string $date, string $name, string $ruby, string $gender, string $birth_year, string $birth_month, string $birth_day, string $blood_type, string $phone_number, string $mail_address, string $current_job, string $job_objective_1, string $job_objective_2, string $job_objective_3, string $job_objective_4, string $job_objective_5, string $event_experience, string $height, string $selfie, string $remarks)
     {
         $value = new Google_Service_Sheets_ValueRange();
-        $value->setValues([ 'values' => [ $date, $name, $ruby, $gender, $birth_year, $birth_month, $birth_day, $blood_type, $phone_number, $mail_address, $current_job, $job_objective_1, $job_objective_1, $job_objective_2, $job_objective_3, $$job_objective_4, $job_objective_5, $event_experience, $height, $selfie, $remarks ] ]);
+        $value->setValues([ 'values' => [ $date, $name, $ruby, $gender, $birth_year, $birth_month, $birth_day, $blood_type, $phone_number, $mail_address, $current_job, $job_objective_1, $job_objective_2, $job_objective_3, $$job_objective_4, $job_objective_5, $event_experience, $height, $selfie, $remarks ] ]);
         $response = $this->service->spreadsheets_values->append($this->spreadsheetId, 'シート1!A1', $value, [ 'valueInputOption' => 'USER_ENTERED' ] );
         var_dump($response);
     }
@@ -119,7 +119,7 @@ if( !empty($clean['btn_confirm']) ) {
 		$auto_reply_subject = 'ご応募ありがとうございます。';
 	    $date = date("Y-m-d H:i");
 		// 本文を設定
-		$auto_reply_text = "この度は、ご応募頂き誠にありがとうございます。\n下記の内容でご応募を受け付けました。\n担当の者より後日ご連絡差し上げます。\n\n";
+		$auto_reply_text =  $clean['your_name'] . " 様\n\nこの度は、ご応募頂き誠にありがとうございます。\n下記の内容でご応募を受け付けました。\n担当の者より後日ご連絡差し上げます。\n\n";
 
 		$auto_reply_text .= "お問い合わせ日時：" . $date . "\n\n";
 		$auto_reply_text .= "氏名：" . $clean['your_name'] . "\n\n";
@@ -130,7 +130,19 @@ if( !empty($clean['btn_confirm']) ) {
 			$auto_reply_text .= "性別：女性\n\n";
 		}
         $auto_reply_text .= "生年月日：" . $clean['birth_year'] . "年" . $clean['birth_month'] . "月" . $clean['birth_day'] . "日\n\n";
-        $auto_reply_text .= "血液型：" . $clean['blood_type'] . "\n\n";
+
+        if( $clean['blood_type'] === "1" ){
+            $auto_reply_text .= "血液型：A型";
+        } elseif( $clean['blood_type'] === "2" ){
+            $auto_reply_text .= "血液型：B型";
+        } elseif( $clean['blood_type'] === "3" ){
+            $auto_reply_text .= "血液型：O型";
+        } elseif( $clean['blood_type'] === "4" ){
+            $auto_reply_text .= "血液型：AB型";
+        } elseif( $clean['blood_type'] === "5" ){ 
+            $auto_reply_text .= "血液型：不明";      
+        }
+
         $auto_reply_text .= "連絡先電話番号：" . $clean['phone_number'] . "\n\n";
         $auto_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";		
 		if( $clean['current_job'] === "1" ){
@@ -167,8 +179,8 @@ if( !empty($clean['btn_confirm']) ) {
 		} else {
 			$auto_reply_text .= "イベント経験：あり\n\n";
 		} 
-        $auto_reply_text .= "身長：" . $clean['height'] . "\n\n";
-        $auto_reply_text .= "備考：" . nl2br($clean['remarks']) . "\n\n";
+        $auto_reply_text .= "身長：" . $clean['height'] . "cm\n\n";
+        $auto_reply_text .= "備考：" . $clean['remarks'] . "\n\n";
 
 		$auto_reply_text .= "株式会社ノックス";
 		
@@ -222,7 +234,23 @@ if( !empty($clean['btn_confirm']) ) {
         
         $admin_reply_text .= "生年月日：" . $clean['birth_year'] . "年" . $clean['birth_month'] . "月" . $clean['birth_day'] . "日\n\n";
         
-        $admin_reply_text .= "血液型：" . $clean['blood_type'] . "\n\n";
+        $blood = null;
+        if( $clean['blood_type'] === "1" ){
+            $admin_reply_text .= "血液型：A型";
+            $blood = "A型";
+        } elseif( $clean['blood_type'] === "2" ){
+            $admin_reply_text .= "血液型：B型";
+            $blood = "B型";
+        } elseif( $clean['blood_type'] === "3" ){
+            $admin_reply_text .= "血液型：O型";
+            $blood = "O型";
+        } elseif( $clean['blood_type'] === "4" ){
+            $admin_reply_text .= "血液型：AB型";
+            $blood = "AB型";
+        } elseif( $clean['blood_type'] === "5" ){ 
+            $admin_reply_text .= "血液型：不明";
+            $blood = "不明";        
+        }
         $admin_reply_text .= "連絡先電話番号：" . $clean['phone_number'] . "\n\n";
         
         $admin_reply_text .= "メールアドレス：" . $clean['email'] . "\n\n";		
@@ -297,17 +325,20 @@ if( !empty($clean['btn_confirm']) ) {
             $event = 'あり';
 		} 
         $admin_reply_text .= "身長：" . $clean['height'] . "cm\n\n";
-        $admin_reply_text .= "備考：" . nl2br($clean['remarks']) . "\n\n";
-		
+        $admin_reply_text .= "備考：" . $clean['remarks'] . "\n\n";
+        $selfie = "なし";
+        if( !empty($clean['attachment_file']) ) {
+            $selfie = "あり";
+        }   
+        $admin_reply_text .= "画像：" . $selfie;
 		// テキストメッセージをセット
 		$body = "--__BOUNDARY__\n";
 		$body .= "Content-Type: text/plain; charset=\"ISO-2022-JP\"\n\n";
 		$body = $admin_reply_text . "\n";
 		$body .= "--__BOUNDARY__\n";
-	    $selfie = "なし";
+
 		// ファイルを添付
 		if( !empty($clean['attachment_file']) ) {
-            $selfie = "あり";
 			$body .= "Content-Type: application/octet-stream; name=\"{$clean['attachment_file']}\"\n";
 			$body .= "Content-Disposition: attachment; filename=\"{$clean['attachment_file']}\"\n";
 			$body .= "Content-Transfer-Encoding: base64\n";
@@ -315,7 +346,7 @@ if( !empty($clean['btn_confirm']) ) {
 			$body .= chunk_split(base64_encode(file_get_contents(FILE_DIR.$clean['attachment_file'])));
 			$body .= "--__BOUNDARY__\n";
 		}
-	    $admin_reply_text .= "画像：" . $selfie;
+
 		// 管理者へメール送信
         mb_send_mail( 'awaya.android@gmail.com', $admin_reply_subject, $body, $header);
 //        $from_admin = new SendGrid\Email(null, $address);
@@ -329,7 +360,7 @@ if( !empty($clean['btn_confirm']) ) {
         
         // GoogleSpreadSheetに書き込み
 		$customer_data = new GoogleSheetsAPISample;
-        $customer_data->append( $date, $clean['your_name'], $clean['your_ruby'], $gender, $clean['birth_year'], $clean['birth_month'], $clean['birth_day'], $clean['blood_type'], $clean['phone_number'], $clean['email'], $current_job, $objective1, $objective2, $objective3, $objective4, $objective5, $event, $clean['height'], $selfie, $clean['remarks']);
+        $customer_data->append( $date, $clean['your_name'], $clean['your_ruby'], $gender, $clean['birth_year'], $clean['birth_month'], $clean['birth_day'], $blood, $clean['phone_number'], $clean['email'], $current_job, $objective1, $objective2, $objective3, $objective4, $objective5, $event, $clean['height'], $selfie, $clean['remarks']);
 	} else {
 		$page_flag = 0;
 	}	
